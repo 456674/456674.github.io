@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('The website is fully loaded.');
 
     const imageElement = document.getElementById('myImage');
-    const image1 = 'image1.jpg';
+    const image1 = 'image1.jpeg';
     const image2 = 'image2.jpg';
 
     imageElement.addEventListener('click', function() {
