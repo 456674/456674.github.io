@@ -1,1 +1,158 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>寻宝游戏</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #e0f7fa;
+    }
+
+    #log {
+      margin: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #ffffff;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
+      max-height: 70vh;
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #f1f8e9;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon {
+      font-size: 24px;
+      margin-right: 15px;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="log">正在寻找宝藏...</div>
+  <script>
+    class TreasureMap {
+      static getInitialClue() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("在古老的图书馆里找到了第一个线索...");
+          }, 1000);
+        });
+      }
+
+      static decodeAncientScript(clue) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (!clue) {
+              reject("没有线索可以解码!");
+            }
+            resolve("解码成功!宝藏在一座古老的神庙中...");
+          }, 1500);
+        });
+      }
+
+      static solveTemplePuzzle() {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const random = Math.random();
+            if (random < 0.3) {
+              reject("谜题太难了，无法解开!");
+            }
+            resolve("谜题解开了，发现了隐藏的通道...");
+          }, 2000);
+        });
+      }
+
+      static searchTemple(location) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            const random = Math.random();
+            if (random < 0.5) {
+              reject("糟糕!遇到了神庙守卫!");
+            }
+            resolve("找到了一个神秘的箱子...");
+          }, 2000);
+        });
+      }
+
+      static openTreasureBox() {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("恭喜!你找到了传说中的宝藏!");
+          }, 1000);
+        });
+      }
+    }
+
+    async function findTreasure() {
+      const logElement = document.getElementById('log');
+      try {
+        const clue = await TreasureMap.getInitialClue();
+        appendLog(clue, '📜');
+
+        const location = await TreasureMap.decodeAncientScript(clue);
+        appendLog(location, '🔍');
+
+        const puzzleResult = await TreasureMap.solveTemplePuzzle();
+        appendLog(puzzleResult, '🧩');
+
+        const box = await TreasureMap.searchTemple(location);
+        appendLog(box, '🏺');
+
+        const treasure = await TreasureMap.openTreasureBox();
+        appendLog(treasure, '💎');
+
+      } catch (error) {
+        appendLog(`任务失败: ${error}`, '❌', true);
+      }
+    }
+
+    function appendLog(message, icon, isError = false) {
+      const logElement = document.getElementById('log');
+      const step = document.createElement('div');
+      step.className = 'step fade-in';
+
+      const iconElement = document.createElement('span');
+      iconElement.textContent = icon;
+      iconElement.className = 'icon';
+
+      const textElement = document.createElement('p');
+      textElement.textContent = message;
+      if (isError) {
+        textElement.style.color = 'red';
+      }
+
+      step.appendChild(iconElement);
+      step.appendChild(textElement);
+      logElement.appendChild(step);
+    }
+
+    findTreasure();
+  </script>
+</body>
+</html>
