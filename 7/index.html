@@ -1,1 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Breakout Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            color: white;
+        }
+
+        canvas {
+            border: 2px solid white;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+
+    <!-- Phaser.js -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            }
+        };
+
+        const game = new Phaser.Game(config);
+
+        let ball, paddle, bricks, cursors, score = 0;
+        let scoreText;
+
+        function preload() {
+            // 使用Phaser图形功能创建浅蓝色球和砖块
+            this.graphics = this.add.graphics();
+            this.graphics.fillStyle(0x87CEEB, 1); // 浅蓝色
+
+            // 创建浅蓝色球
+            this.graphics.fillCircle(10, 10, 10);
+            this.graphics.generateTexture('lightBlueBall', 20, 20);
+
+            // 创建浅蓝色砖块
+            this.graphics.clear();
+            this.graphics.fillStyle(0x87CEEB, 1);
+            this.graphics.fillRect(0, 0, 64, 20);
+            this.graphics.generateTexture('lightBlueBrick', 64, 20);
+
+            // 创建浅蓝色挡板
+            this.graphics.clear();
+            this.graphics.fillStyle(0x87CEEB, 1);
+            this.graphics.fillRect(0, 0, 104, 20);
+            this.graphics.generateTexture('lightBluePaddle', 104, 20);
+        }
+
+        function create() {
+            scoreText = this.add.text(16, 16, 'Score: 0', {
+                fontSize: '32px',
+                fill: '#fff'
+            });
+
+            paddle = this.physics.add.image(400, 550, 'lightBluePaddle').setImmovable();
+
+            ball = this.physics.add.image(400, 300, 'lightBlueBall').setCollideWorldBounds(true).setBounce(1);
+            ball.setVelocity(200, -200);
+
+            bricks = this.physics.add.staticGroup();
+            for (let x = 100; x < 700; x += 70) {
+                for (let y = 100; y < 300; y += 30) {
+                    bricks.create(x, y, 'lightBlueBrick');
+                }
+            }
+
+            this.physics.add.collider(ball, paddle, hitPaddle, null, this);
+            this.physics.add.collider(ball, bricks, hitBrick, null, this);
+
+            cursors = this.input.keyboard.createCursorKeys();
+        }
+
+        function update() {
+            if (cursors.left.isDown) {
+                paddle.setVelocityX(-300);
+            } else if (cursors.right.isDown) {
+                paddle.setVelocityX(300);
+            } else {
+                paddle.setVelocityX(0);
+            }
+
+            if (ball.y > 600) {
+                this.scene.restart();
+                score = 0;
+                scoreText.setText('Score: ' + score);
+            }
+        }
+
+        function hitPaddle(ball, paddle) {
+            let diff = 0;
+
+            if (ball.x < paddle.x) {
+                diff = paddle.x - ball.x;
+                ball.setVelocityX(-10 * diff);
+            } else if (ball.x > paddle.x) {
+                diff = ball.x - paddle.x;
+                ball.setVelocityX(10 * diff);
+            } else {
+                ball.setVelocityX(2 + Math.random() * 8);
+            }
+        }
+
+        function hitBrick(ball, brick) {
+            brick.disableBody(true, true);
+            ball.setVelocityY(ball.body.velocity.y * -1);
+
+            score += 10;
+            scoreText.setText('Score: ' + score);
+        }
+    </script>
+</body>
+</html>
 
